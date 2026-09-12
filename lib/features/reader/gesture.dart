@@ -150,7 +150,7 @@ class ReaderGestureDetectorState
     if (HardwareKeyboard.instance.isControlPressed) {
       return;
     }
-    if (context.reader.mode.key.startsWith('gallery')) {
+    if (context.reader.mode.isGallery) {
       if (forward) {
         if (!context.reader.toNextPage() &&
             !context.reader.isLastChapterOfGroup) {
@@ -258,6 +258,7 @@ class ReaderGestureDetectorState
           next = () => context.reader.toPrevPage();
         }
         switch (context.reader.mode) {
+          case ReaderMode.dualPage:
           case ReaderMode.galleryLeftToRight:
           case ReaderMode.continuousLeftToRight:
             if (isLeft) {

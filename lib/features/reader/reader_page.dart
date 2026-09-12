@@ -489,6 +489,11 @@ abstract mixin class ReaderImagePerPageHandler {
   /// The number of images displayed on one screen
   int get imagesPerPage {
     if (mode.isContinuous) return 1;
+    // Dual page mode always shows two pages side by side in landscape
+    // and a single page in portrait.
+    if (mode == ReaderMode.dualPage) {
+      return isPortrait ? 1 : 2;
+    }
     if (isPortrait) {
       return appdata.settings.getReaderSetting(
             cid,
@@ -798,6 +803,7 @@ mixin class ReaderWindow {
 
 enum ReaderMode {
   waterfallTopToBottom('waterfallTopToBottom'),
+  dualPage('dualPage'),
   galleryLeftToRight('galleryLeftToRight'),
   galleryRightToLeft('galleryRightToLeft'),
   galleryTopToBottom('galleryTopToBottom'),
@@ -807,7 +813,7 @@ enum ReaderMode {
 
   final String key;
 
-  bool get isGallery => key.startsWith('gallery');
+  bool get isGallery => key.startsWith('gallery') || this == dualPage;
 
   bool get isWaterfall => key.startsWith('waterfall');
 

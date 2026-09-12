@@ -352,6 +352,7 @@ class _ReaderSettingsState extends State<ReaderSettings> {
           settingKey: "readerMode",
           optionTranslation: {
             "waterfallTopToBottom": "Waterfall (Top to Bottom)".tl,
+            "dualPage": "Dual Page".tl,
             "galleryLeftToRight": "Gallery (Left to Right)".tl,
             "galleryRightToLeft": "Gallery (Right to Left)".tl,
             "galleryTopToBottom": "Gallery (Top to Bottom)".tl,
@@ -427,9 +428,11 @@ class _ReaderSettingsState extends State<ReaderSettings> {
         ),
         SliverAnimatedVisibility(
           visible:
-              appdata.settings['readerMode']!.startsWith('gallery') &&
-              (appdata.settings['readerScreenPicNumberForLandscape'] > 1 ||
-                  appdata.settings['readerScreenPicNumberForPortrait'] > 1),
+              (appdata.settings['readerMode']!.startsWith('gallery') &&
+                  (appdata.settings['readerScreenPicNumberForLandscape'] > 1 ||
+                      appdata.settings['readerScreenPicNumberForPortrait'] >
+                          1)) ||
+              appdata.settings['readerMode'] == 'dualPage',
           child: SwitchSetting(
             title: "Show single image on first page".tl,
             settingKey: "showSingleImageOnFirstPage",

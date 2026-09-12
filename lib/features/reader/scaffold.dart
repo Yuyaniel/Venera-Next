@@ -96,6 +96,7 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
               case ReaderMode.waterfallTopToBottom:
               case ReaderMode.galleryTopToBottom:
                 distance += offset.dx;
+              case ReaderMode.dualPage:
               case ReaderMode.continuousLeftToRight:
               case ReaderMode.galleryLeftToRight:
               case ReaderMode.galleryRightToLeft:

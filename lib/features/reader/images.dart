@@ -596,7 +596,8 @@ class GalleryModeState extends State<_GalleryMode>
   @override
   void handleKeyEvent(KeyEvent event) {
     bool? forward;
-    if (reader.mode == ReaderMode.galleryLeftToRight &&
+    if ((reader.mode == ReaderMode.galleryLeftToRight ||
+            reader.mode == ReaderMode.dualPage) &&
         event.logicalKey == LogicalKeyboardKey.arrowRight) {
       forward = true;
     } else if (reader.mode == ReaderMode.galleryRightToLeft &&
@@ -608,7 +609,8 @@ class GalleryModeState extends State<_GalleryMode>
     } else if (reader.mode == ReaderMode.galleryTopToBottom &&
         event.logicalKey == LogicalKeyboardKey.arrowUp) {
       forward = false;
-    } else if (reader.mode == ReaderMode.galleryLeftToRight &&
+    } else if ((reader.mode == ReaderMode.galleryLeftToRight ||
+            reader.mode == ReaderMode.dualPage) &&
         event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       forward = false;
     } else if (reader.mode == ReaderMode.galleryRightToLeft &&
