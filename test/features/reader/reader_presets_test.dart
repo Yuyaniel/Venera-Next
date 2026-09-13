@@ -85,9 +85,9 @@ void main() {
     }
   });
 
-  test('setPresetInBottomBar appends and removes the preset button', () {
+  test('setPresetInBottomBar appends and removes the preset button', () async {
     final dataDir = Directory.systemTemp.createTempSync('venera-presets-');
-    addTearDown(() {
+    addTearDown(() async {
       if (dataDir.existsSync()) {
         dataDir.deleteSync(recursive: true);
       }
@@ -101,9 +101,11 @@ void main() {
       );
 
       setPresetInBottomBar('p1', true);
+      await appdata.saveData();
       expect(appdata.settings['readerBottomBarButtons'], contains('preset:p1'));
 
       setPresetInBottomBar('p1', false);
+      await appdata.saveData();
       expect(
         appdata.settings['readerBottomBarButtons'],
         isNot(contains('preset:p1')),
@@ -113,34 +115,38 @@ void main() {
     }
   });
 
-  test('deleteReaderPreset removes the preset and its bottom bar button', () {
-    final dataDir = Directory.systemTemp.createTempSync('venera-presets-');
-    addTearDown(() {
-      if (dataDir.existsSync()) {
-        dataDir.deleteSync(recursive: true);
+  test(
+    'deleteReaderPreset removes the preset and its bottom bar button',
+    () async {
+      final dataDir = Directory.systemTemp.createTempSync('venera-presets-');
+      addTearDown(() async {
+        if (dataDir.existsSync()) {
+          dataDir.deleteSync(recursive: true);
+        }
+      });
+      App.dataPath = dataDir.path;
+
+      final previousPresets = appdata.settings['readerPresets'];
+      final previousBar = appdata.settings['readerBottomBarButtons'];
+      try {
+        final preset = ReaderPreset(
+          id: 'p1',
+          name: '横屏双页',
+          rotation: readerPresetRotationLandscape,
+          settings: const {'readerMode': 'dualPage'},
+        );
+        appdata.settings['readerPresets'] = [preset.toMap()];
+        appdata.settings['readerBottomBarButtons'] = ['favorite', 'preset:p1'];
+
+        deleteReaderPreset('p1');
+        await appdata.saveData();
+
+        expect(listReaderPresets(), isEmpty);
+        expect(appdata.settings['readerBottomBarButtons'], ['favorite']);
+      } finally {
+        appdata.settings['readerPresets'] = previousPresets;
+        appdata.settings['readerBottomBarButtons'] = previousBar;
       }
-    });
-    App.dataPath = dataDir.path;
-
-    final previousPresets = appdata.settings['readerPresets'];
-    final previousBar = appdata.settings['readerBottomBarButtons'];
-    try {
-      final preset = ReaderPreset(
-        id: 'p1',
-        name: '横屏双页',
-        rotation: readerPresetRotationLandscape,
-        settings: const {'readerMode': 'dualPage'},
-      );
-      appdata.settings['readerPresets'] = [preset.toMap()];
-      appdata.settings['readerBottomBarButtons'] = ['favorite', 'preset:p1'];
-
-      deleteReaderPreset('p1');
-
-      expect(listReaderPresets(), isEmpty);
-      expect(appdata.settings['readerBottomBarButtons'], ['favorite']);
-    } finally {
-      appdata.settings['readerPresets'] = previousPresets;
-      appdata.settings['readerBottomBarButtons'] = previousBar;
-    }
-  });
+    },
+  );
 }
