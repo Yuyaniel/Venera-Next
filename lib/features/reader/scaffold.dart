@@ -126,9 +126,6 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
         sliderFocus.nextFocus();
       }
     });
-    if (rotation != null) {
-      SystemChrome.setPreferredOrientations(DeviceOrientation.values);
-    }
     super.initState();
     Future.delayed(const Duration(milliseconds: 200), addDragListener);
   }
@@ -165,8 +162,6 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
     });
     _applySystemUiMode();
   }
-
-  bool? rotation;
 
   void update() {
     setState(() {});
@@ -218,7 +213,7 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
         Positioned.fill(
           child: AbsorbPointer(
             absorbing: context.reader.isPageAnimating,
-            child: widget.child,
+            child: _rotateContent(context),
           ),
         ),
         if (!isOnChapterCommentsPage)
@@ -277,6 +272,34 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
           child: EInkRefreshOverlay(controller: _eInkRefreshController),
         ),
       ],
+    );
+  }
+
+  /// 只在阅读器内部旋转漫画内容，不影响全局屏幕方向。
+  ///
+  /// [rotation] 为空时跟随系统方向；为 true 时强制横屏显示；
+  /// 为 false 时强制竖屏显示。旋转时同步覆盖 MediaQuery 的方向与尺寸，
+  /// 使阅读器内部布局、分页与手势坐标感知到旋转后的方向。
+  Widget _rotateContent(BuildContext context) {
+    final rotation = context.reader.rotation;
+    if (rotation == null) return widget.child;
+    final mq = MediaQuery.of(context);
+    final targetLandscape = rotation == true;
+    final isLandscape = mq.orientation == Orientation.landscape;
+    if (targetLandscape == isLandscape) {
+      return widget.child;
+    }
+    return RotatedBox(
+      quarterTurns: targetLandscape ? 1 : 3,
+      child: MediaQuery(
+        data: mq.copyWith(
+          size: Size(mq.size.height, mq.size.width),
+          orientation: targetLandscape
+              ? Orientation.landscape
+              : Orientation.portrait,
+        ),
+        child: widget.child,
+      ),
     );
   }
 
@@ -537,6 +560,7 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
           message: "Screen Rotation".tl,
           child: IconButton(
             icon: () {
+              final rotation = context.reader.rotation;
               if (rotation == null) {
                 return const Icon(Icons.screen_rotation);
               } else if (rotation == false) {
@@ -546,28 +570,8 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
               }
             }.call(),
             onPressed: () {
-              if (rotation == null) {
-                setState(() {
-                  rotation = false;
-                });
-                SystemChrome.setPreferredOrientations([
-                  DeviceOrientation.portraitUp,
-                  DeviceOrientation.portraitDown,
-                ]);
-              } else if (rotation == false) {
-                setState(() {
-                  rotation = true;
-                });
-                SystemChrome.setPreferredOrientations([
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight,
-                ]);
-              } else {
-                setState(() {
-                  rotation = null;
-                });
-                SystemChrome.setPreferredOrientations(DeviceOrientation.values);
-              }
+              context.reader.toggleRotation();
+              update();
             },
           ),
         ),

@@ -140,9 +140,30 @@ class ReaderState extends State<Reader>
   @override
   late ReaderMode mode;
 
+  /// 阅读器内部的漫画方向：null 跟随系统，false 强制竖屏，true 强制横屏。
+  /// 只影响漫画内容显示，不影响全局屏幕方向。
+  bool? rotation;
+
+  void toggleRotation() {
+    setState(() {
+      if (rotation == null) {
+        rotation = false;
+      } else if (rotation == false) {
+        rotation = true;
+      } else {
+        rotation = null;
+      }
+    });
+  }
+
   @override
-  bool get isPortrait =>
-      MediaQuery.of(context).orientation == Orientation.portrait;
+  bool get isPortrait {
+    final rotation = this.rotation;
+    if (rotation != null) {
+      return !rotation;
+    }
+    return MediaQuery.of(context).orientation == Orientation.portrait;
+  }
 
   History? history;
 
