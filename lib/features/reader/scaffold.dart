@@ -292,12 +292,8 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
     return RotatedBox(
       quarterTurns: targetLandscape ? 1 : 3,
       child: MediaQuery(
-        data: mq.copyWith(
-          size: Size(mq.size.height, mq.size.width),
-          orientation: targetLandscape
-              ? Orientation.landscape
-              : Orientation.portrait,
-        ),
+        // orientation 由 size 的宽高比派生，交换宽高后会自动变为目标方向
+        data: mq.copyWith(size: Size(mq.size.height, mq.size.width)),
         child: widget.child,
       ),
     );
