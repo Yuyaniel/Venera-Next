@@ -19,7 +19,8 @@ class ReaderBottomBarButtonsPage extends StatefulWidget {
       _ReaderBottomBarButtonsPageState();
 }
 
-class _ReaderBottomBarButtonsPageState extends State<ReaderBottomBarButtonsPage> {
+class _ReaderBottomBarButtonsPageState
+    extends State<ReaderBottomBarButtonsPage> {
   late List<String> _visible;
 
   final _scrollController = ScrollController();
@@ -27,8 +28,9 @@ class _ReaderBottomBarButtonsPageState extends State<ReaderBottomBarButtonsPage>
   var _reorderKey = UniqueKey();
 
   /// 当前平台下可用的按钮（默认顺序）。
-  List<String> get _availableIds =>
-      defaultReaderBottomBarButtons.where(readerBottomBarButtonAvailable).toList();
+  List<String> get _availableIds => defaultReaderBottomBarButtons
+      .where(readerBottomBarButtonAvailable)
+      .toList();
 
   @override
   void initState() {
@@ -163,10 +165,7 @@ class _ReaderBottomBarButtonsPageState extends State<ReaderBottomBarButtonsPage>
         title: Text("Bottom bar buttons".tl),
         actions: [
           if (hasHidden)
-            TextButton(
-              onPressed: _showAddDialog,
-              child: Text("Add".tl),
-            ),
+            TextButton(onPressed: _showAddDialog, child: Text("Add".tl)),
           TextButton(onPressed: _reset, child: Text("Reset".tl)),
         ],
       ),

@@ -610,8 +610,7 @@ class _ReaderSettingsState extends State<ReaderSettings> {
         ).toSliver(),
         CallbackSetting(
           title: "Bottom bar buttons".tl,
-          callback: () =>
-              context.to(() => const ReaderBottomBarButtonsPage()),
+          callback: () => context.to(() => const ReaderBottomBarButtonsPage()),
           actionTitle: "Edit".tl,
         ).toSliver(),
         SliderSetting(
