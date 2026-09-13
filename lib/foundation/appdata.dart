@@ -419,6 +419,8 @@ class Settings with ChangeNotifier {
         false, // show chapter comments at end of chapter
     'splitDualPage': false,
     'splitDualPageInvert': false,
+    // 底栏按钮顺序：列表内为显示（按此顺序），未列出的为隐藏。
+    'readerBottomBarButtons': defaultReaderBottomBarButtons,
   };
 
   operator [](String key) {
@@ -545,6 +547,19 @@ class Settings with ChangeNotifier {
     return _data.toString();
   }
 }
+
+/// 阅读器底栏按钮的默认顺序（含全部按钮，按 buildBottom 原有排列）。
+/// fullscreen / rotation / chapters 为条件按钮，渲染时仍会经过平台与内容过滤。
+const defaultReaderBottomBarButtons = <String>[
+  'favorite',
+  'fullscreen',
+  'rotation',
+  'brightness',
+  'autoPageTurning',
+  'chapters',
+  'save',
+  'share',
+];
 
 const defaultCustomImageProcessing = '''
 /**

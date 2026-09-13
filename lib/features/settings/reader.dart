@@ -4,6 +4,7 @@ import 'package:venera_next/components/code.dart';
 import 'package:venera_next/components/layout.dart';
 import 'package:venera_next/components/scroll.dart';
 import 'package:venera_next/features/reader/brightness.dart';
+import 'package:venera_next/features/settings/reader_bottom_bar.dart';
 import 'package:venera_next/features/settings/setting_components.dart';
 import 'package:venera_next/foundation/app.dart';
 import 'package:venera_next/foundation/appdata.dart';
@@ -605,6 +606,12 @@ class _ReaderSettingsState extends State<ReaderSettings> {
         CallbackSetting(
           title: "Custom Image Processing".tl,
           callback: () => context.to(() => _CustomImageProcessing()),
+          actionTitle: "Edit".tl,
+        ).toSliver(),
+        CallbackSetting(
+          title: "Bottom bar buttons".tl,
+          callback: () =>
+              context.to(() => const ReaderBottomBarButtonsPage()),
           actionTitle: "Edit".tl,
         ).toSliver(),
         SliderSetting(

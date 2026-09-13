@@ -127,11 +127,14 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
       }
     });
     super.initState();
+    // 底栏按钮配置变更后刷新阅读器底栏
+    appdata.settings.addListener(update);
     Future.delayed(const Duration(milliseconds: 200), addDragListener);
   }
 
   @override
   void dispose() {
+    appdata.settings.removeListener(update);
     _eInkRefreshController.dispose();
     sliderFocus.dispose();
     super.dispose();
@@ -143,6 +146,15 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
       context.reader.type.sourceKey,
       key,
     );
+  }
+
+  /// 读取底栏按钮的显示顺序（列表内为显示，未列出的视为隐藏）。
+  List<String> _bottomBarOrder() {
+    final saved = appdata.settings['readerBottomBarButtons'];
+    if (saved is List) {
+      return List<String>.from(saved);
+    }
+    return defaultReaderBottomBarButtons;
   }
 
   void _applySystemUiMode() {
@@ -542,8 +554,8 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
       text = "P$displayPage";
     }
 
-    final buttons = [
-      Tooltip(
+    final allButtons = <String, Widget>{
+      'favorite': Tooltip(
         message: "Collect the image".tl,
         child: IconButton(
           icon: Icon(isLiked() ? Icons.favorite : Icons.favorite_border),
@@ -551,7 +563,7 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
         ),
       ),
       if (App.isDesktop)
-        Tooltip(
+        'fullscreen': Tooltip(
           message: "${"Full Screen".tl}(F12)",
           child: IconButton(
             icon: const Icon(Icons.fullscreen),
@@ -561,7 +573,7 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
           ),
         ),
       if (App.isAndroid)
-        Tooltip(
+        'rotation': Tooltip(
           message: "Screen Rotation".tl,
           child: IconButton(
             icon: () {
@@ -580,7 +592,7 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
             },
           ),
         ),
-      Tooltip(
+      'brightness': Tooltip(
         message: 'Reader brightness'.tl,
         child: IconButton(
           icon: Icon(
@@ -598,7 +610,7 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
           },
         ),
       ),
-      Tooltip(
+      'autoPageTurning': Tooltip(
         message: "Auto Page Turning".tl,
         child: IconButton(
           icon: context.reader.autoPageTurningTimer != null
@@ -614,24 +626,29 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
         ),
       ),
       if (context.reader.widget.chapters != null)
-        Tooltip(
+        'chapters': Tooltip(
           message: "Chapters".tl,
           child: IconButton(
             icon: const Icon(Icons.library_books),
             onPressed: openChapterDrawer,
           ),
         ),
-      Tooltip(
+      'save': Tooltip(
         message: "Save Image".tl,
         child: IconButton(
           icon: const Icon(Icons.download),
           onPressed: saveCurrentImage,
         ),
       ),
-      Tooltip(
+      'share': Tooltip(
         message: "Share".tl,
         child: IconButton(icon: const Icon(Icons.share), onPressed: share),
       ),
+    };
+
+    final buttons = [
+      for (final id in _bottomBarOrder())
+        if (allButtons.containsKey(id)) allButtons[id]!,
     ];
 
     Widget child = SizedBox(
