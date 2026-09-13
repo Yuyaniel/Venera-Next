@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:venera_next/components/appbar.dart';
 import 'package:venera_next/features/reader/bottom_bar.dart';
+import 'package:venera_next/features/reader/reader_presets.dart';
 import 'package:venera_next/foundation/app.dart';
 import 'package:venera_next/foundation/appdata.dart';
 import 'package:venera_next/foundation/context.dart';
@@ -27,10 +28,11 @@ class _ReaderBottomBarButtonsPageState
 
   var _reorderKey = UniqueKey();
 
-  /// 当前平台下可用的按钮（默认顺序）。
-  List<String> get _availableIds => defaultReaderBottomBarButtons
-      .where(readerBottomBarButtonAvailable)
-      .toList();
+  /// 当前平台下可用的按钮（默认顺序），包含已存在的预设方案按钮。
+  List<String> get _availableIds => [
+    ...defaultReaderBottomBarButtons.where(readerBottomBarButtonAvailable),
+    ...listReaderPresets().map((preset) => readerPresetButtonId(preset.id)),
+  ];
 
   @override
   void initState() {

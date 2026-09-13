@@ -420,7 +420,10 @@ class Settings with ChangeNotifier {
     'splitDualPage': false,
     'splitDualPageInvert': false,
     // 底栏按钮顺序：列表内为显示（按此顺序），未列出的为隐藏。
+    // 预设方案按钮的 id 为 "preset:<方案id>"。
     'readerBottomBarButtons': defaultReaderBottomBarButtons,
+    // 阅读设置预设方案：[{id, name, rotation, settings}]
+    'readerPresets': <Map<String, dynamic>>[],
   };
 
   operator [](String key) {
@@ -559,6 +562,28 @@ const defaultReaderBottomBarButtons = <String>[
   'chapters',
   'save',
   'share',
+];
+
+/// 阅读设置预设方案捕获的设置键（均为上方已存在的阅读设置）。
+/// 屏幕方向对应阅读器内部的内容方向状态（ReaderState.rotation），
+/// 随方案以 "rotation" 字段单独存储，不属于该列表。
+const readerPresetKeys = <String>[
+  'readerMode',
+  'readerScreenPicNumberForPortrait',
+  'readerScreenPicNumberForLandscape',
+  'splitDualPage',
+  'splitDualPageInvert',
+  'showSingleImageOnFirstPage',
+  'enableTapToTurnPages',
+  'reverseTapToTurnPages',
+  'enableTurnPageByVolumeKey',
+  'enablePageAnimation',
+  'readerScrollSpeed',
+  'enableDoubleTapToZoom',
+  'enableLongPressToZoom',
+  'longPressZoomPosition',
+  'readerBrightnessEnabled',
+  'readerBrightness',
 ];
 
 const defaultCustomImageProcessing = '''

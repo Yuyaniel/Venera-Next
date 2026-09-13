@@ -17,6 +17,7 @@ import 'package:venera_next/features/reader/eink_refresh.dart';
 import 'package:venera_next/features/reader/gesture.dart';
 import 'package:venera_next/features/reader/images.dart';
 import 'package:venera_next/features/reader/reader_page.dart';
+import 'package:venera_next/features/reader/reader_presets.dart';
 import 'package:venera_next/foundation/app.dart';
 import 'package:venera_next/foundation/appdata.dart';
 import 'package:venera_next/foundation/cache_manager.dart';
@@ -155,6 +156,41 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
       return List<String>.from(saved);
     }
     return defaultReaderBottomBarButtons;
+  }
+
+  /// 应用阅读设置预设方案。
+  ///
+  /// 写入顺序：先写入全部设置键，再设置内容方向，最后切换阅读模式，
+  /// 并只触发一次重建。阅读位置由 build 顶部的 _checkImagesPerPageChange
+  /// 既有机制自动换算，不会丢失进度。
+  void _applyReaderPreset(ReaderPreset preset) {
+    final reader = context.reader;
+    final comicId = reader.cid;
+    final sourceKey = reader.type.sourceKey;
+    for (final entry in preset.settings.entries) {
+      if (!readerPresetKeys.contains(entry.key)) continue;
+      appdata.settings.setActiveReaderSetting(
+        comicId,
+        sourceKey,
+        entry.key,
+        entry.value,
+      );
+    }
+    reader.rotation = switch (preset.rotation) {
+      readerPresetRotationPortrait => false,
+      readerPresetRotationLandscape => true,
+      _ => null,
+    };
+    final modeKey = appdata.settings.getReaderSetting(
+      comicId,
+      sourceKey,
+      'readerMode',
+    );
+    if (modeKey is String) {
+      reader.mode = ReaderMode.fromKey(modeKey);
+    }
+    reader.update();
+    context.showMessage(message: "Preset applied".tl);
   }
 
   void _applySystemUiMode() {
@@ -646,8 +682,25 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
       ),
     };
 
+    final bottomBarOrder = _bottomBarOrder();
+    // 预设方案按钮：复用第二阶段的底栏排序表，失效的方案 id 会被跳过。
+    for (final id in bottomBarOrder) {
+      if (!id.startsWith(readerPresetButtonIdPrefix)) continue;
+      final preset = findReaderPreset(
+        id.substring(readerPresetButtonIdPrefix.length),
+      );
+      if (preset == null) continue;
+      allButtons[id] = Tooltip(
+        message: preset.name,
+        child: IconButton(
+          icon: const Icon(Icons.auto_stories),
+          onPressed: () => _applyReaderPreset(preset),
+        ),
+      );
+    }
+
     final buttons = [
-      for (final id in _bottomBarOrder())
+      for (final id in bottomBarOrder)
         if (allButtons.containsKey(id)) allButtons[id]!,
     ];
 
@@ -908,6 +961,7 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
       ReaderSettings(
         comicId: context.reader.cid,
         comicSource: context.reader.type.sourceKey,
+        currentReaderRotation: context.reader.rotation,
         onChanged: (key) {
           if (key == "readerMode") {
             context.reader.mode = ReaderMode.fromKey(

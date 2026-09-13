@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:venera_next/features/reader/reader_presets.dart';
 import 'package:venera_next/foundation/app.dart';
 import 'package:venera_next/foundation/translations.dart';
 
@@ -6,8 +7,15 @@ import 'package:venera_next/foundation/translations.dart';
 ///
 /// 按钮的点击逻辑（依赖阅读器上下文）仍保留在 scaffold.dart 中，
 /// 这里只提供展示所需的名称、图标与平台可用性。
+/// 预设方案按钮（id 为 "preset:<方案id>"）的名称取自方案本身。
 
 String readerBottomBarButtonTitle(String id) {
+  if (id.startsWith(readerPresetButtonIdPrefix)) {
+    final preset = findReaderPreset(
+      id.substring(readerPresetButtonIdPrefix.length),
+    );
+    return preset?.name ?? id;
+  }
   switch (id) {
     case 'favorite':
       return "Collect the image".tl;
@@ -31,6 +39,9 @@ String readerBottomBarButtonTitle(String id) {
 }
 
 IconData readerBottomBarButtonIcon(String id) {
+  if (id.startsWith(readerPresetButtonIdPrefix)) {
+    return Icons.auto_stories;
+  }
   switch (id) {
     case 'favorite':
       return Icons.favorite_border;
@@ -54,8 +65,12 @@ IconData readerBottomBarButtonIcon(String id) {
 }
 
 /// 按钮在当前平台是否可用。不可用（如 Android 下的全屏）不会出现在底栏，
-/// 也不应出现在管理页面中。
+/// 也不应出现在管理页面中。预设按钮要求方案仍然存在。
 bool readerBottomBarButtonAvailable(String id) {
+  if (id.startsWith(readerPresetButtonIdPrefix)) {
+    return findReaderPreset(id.substring(readerPresetButtonIdPrefix.length)) !=
+        null;
+  }
   switch (id) {
     case 'fullscreen':
       return App.isDesktop;

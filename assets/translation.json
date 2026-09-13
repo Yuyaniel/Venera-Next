@@ -656,7 +656,18 @@
     "Fetching image list...": "正在获取图片列表...",
     "Fetching image list (@a/@b)...": "正在获取图片列表（@a/@b）...",
     "Downloading...": "正在下载...",
-    "Webview": "网页浏览"
+    "Webview": "网页浏览",
+    "Reading Presets": "阅读设置预设",
+    "New Preset": "新建预设",
+    "Preset name": "方案名称",
+    "No presets yet": "暂无预设方案",
+    "Update with current settings": "用当前设置覆盖",
+    "Delete preset": "删除预设方案",
+    "The preset will be deleted. If it is on the bottom bar, its button will be removed as well.": "预设方案将被删除；若已添加到底栏，对应的底栏按钮也会被移除。",
+    "Preset applied": "预设已应用",
+    "Follow System": "跟随系统",
+    "Landscape": "横屏",
+    "Portrait": "竖屏"
   },
   "zh_TW": {
     "Home": "首頁",
@@ -1315,6 +1326,17 @@
     "Fetching image list...": "正在取得圖片清單...",
     "Fetching image list (@a/@b)...": "正在取得圖片清單（@a/@b）...",
     "Downloading...": "正在下載...",
-    "Webview": "網頁瀏覽"
+    "Webview": "網頁瀏覽",
+    "Reading Presets": "閱讀設定預設",
+    "New Preset": "新建預設",
+    "Preset name": "方案名稱",
+    "No presets yet": "暫無預設方案",
+    "Update with current settings": "用目前設定覆蓋",
+    "Delete preset": "刪除預設方案",
+    "The preset will be deleted. If it is on the bottom bar, its button will be removed as well.": "預設方案將被刪除；若已加入底欄，對應的底欄按鈕也會一併移除。",
+    "Preset applied": "預設已應用",
+    "Follow System": "跟隨系統",
+    "Landscape": "橫屏",
+    "Portrait": "豎屏"
   }
 }

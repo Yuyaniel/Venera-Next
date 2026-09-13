@@ -5,6 +5,7 @@ import 'package:venera_next/components/layout.dart';
 import 'package:venera_next/components/scroll.dart';
 import 'package:venera_next/features/reader/brightness.dart';
 import 'package:venera_next/features/settings/reader_bottom_bar.dart';
+import 'package:venera_next/features/settings/reader_presets.dart';
 import 'package:venera_next/features/settings/setting_components.dart';
 import 'package:venera_next/foundation/app.dart';
 import 'package:venera_next/foundation/appdata.dart';
@@ -18,11 +19,16 @@ class ReaderSettings extends StatefulWidget {
     this.onChanged,
     this.comicId,
     this.comicSource,
+    this.currentReaderRotation,
   });
 
   final void Function(String key)? onChanged;
   final String? comicId;
   final String? comicSource;
+
+  /// 打开时阅读器的内容方向（ReaderState.rotation），
+  /// 供预设方案捕获“当前设置”。仅在阅读器内打开时传入。
+  final bool? currentReaderRotation;
 
   @override
   State<ReaderSettings> createState() => _ReaderSettingsState();
@@ -611,6 +617,17 @@ class _ReaderSettingsState extends State<ReaderSettings> {
         CallbackSetting(
           title: "Bottom bar buttons".tl,
           callback: () => context.to(() => const ReaderBottomBarButtonsPage()),
+          actionTitle: "Edit".tl,
+        ).toSliver(),
+        CallbackSetting(
+          title: "Reading Presets".tl,
+          callback: () => context.to(
+            () => ReaderPresetsPage(
+              comicId: widget.comicId,
+              comicSource: widget.comicSource,
+              currentRotation: widget.currentReaderRotation,
+            ),
+          ),
           actionTitle: "Edit".tl,
         ).toSliver(),
         SliderSetting(
