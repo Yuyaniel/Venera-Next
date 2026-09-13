@@ -275,22 +275,31 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
     );
   }
 
+  /// 漫画内容的旋转 quarterTurns（0/1/3）。
+  ///
+  /// 0 表示不旋转；1 表示在竖屏物理屏幕上强制横屏内容；
+  /// 3 表示在横屏物理屏幕上强制竖屏内容。供内容旋转与覆盖层定位复用。
+  int get _contentQuarterTurns {
+    final rotation = context.reader.rotation;
+    if (rotation == null) return 0;
+    final targetLandscape = rotation == true;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    if (targetLandscape == isLandscape) return 0;
+    return targetLandscape ? 1 : 3;
+  }
+
   /// 只在阅读器内部旋转漫画内容，不影响全局屏幕方向。
   ///
   /// [rotation] 为空时跟随系统方向；为 true 时强制横屏显示；
   /// 为 false 时强制竖屏显示。旋转时同步覆盖 MediaQuery 的方向与尺寸，
   /// 使阅读器内部布局、分页与手势坐标感知到旋转后的方向。
   Widget _rotateContent(BuildContext context) {
-    final rotation = context.reader.rotation;
-    if (rotation == null) return widget.child;
+    final turns = _contentQuarterTurns;
+    if (turns == 0) return widget.child;
     final mq = MediaQuery.of(context);
-    final targetLandscape = rotation == true;
-    final isLandscape = mq.orientation == Orientation.landscape;
-    if (targetLandscape == isLandscape) {
-      return widget.child;
-    }
     return RotatedBox(
-      quarterTurns: targetLandscape ? 1 : 3,
+      quarterTurns: turns,
       child: MediaQuery(
         // orientation 由 size 的宽高比派生，交换宽高后会自动变为目标方向
         data: mq.copyWith(size: Size(mq.size.height, mq.size.width)),
@@ -814,9 +823,18 @@ class ReaderScaffoldState extends State<ReaderScaffold> {
 
   Widget buildStatusInfo() {
     if (_readerSetting('enableClockAndBatteryInfoInReader') == true) {
+      // 时间/电量显示在漫画内容的右下角。漫画内容被旋转后，
+      // 其右下角在物理屏幕上对应的边会变化，据此调整锚定角。
+      final turns = _contentQuarterTurns;
+      final double? top = turns == 1 ? 13 : null;
+      final double? bottom = turns != 1 ? 13 : null;
+      final double? left = turns == 3 ? 25 : null;
+      final double? right = turns != 3 ? 25 : null;
       return Positioned(
-        bottom: 13,
-        right: 25,
+        top: top,
+        bottom: bottom,
+        left: left,
+        right: right,
         child: Row(
           children: [
             _ClockWidget(),

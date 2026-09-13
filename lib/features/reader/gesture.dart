@@ -191,12 +191,14 @@ class ReaderGestureDetectorState
       _longPressInProgress = false;
       return;
     }
-    final location = event.globalPosition;
+    // 使用局部坐标：阅读器内容可能被 RotatedBox 旋转，
+    // localPosition 与旋转后的 MediaQuery 尺寸一致，globalPosition 仍是物理屏幕坐标。
+    final location = event.localPosition;
     if (!_enableDoubleTapToZoom) {
       onTap(location);
       return;
     }
-    final previousLocation = _previousEvent?.globalPosition;
+    final previousLocation = _previousEvent?.localPosition;
     if (previousLocation != null) {
       if ((location - previousLocation).distanceSquared <
           _kDoubleTapMaxDistanceSquared) {
